@@ -84,8 +84,8 @@ const MagenticUILayout = ({
           </main>
         </ConfigProvider>
         <div className="text-sm text-primary mt-2 mb-2 text-center">
-          Magentic-UI can make mistakes. Please monitor its work and intervene if
-          necessary.
+          Dr. Sai can make mistakes. Please monitor its work and intervene if
+          necessary. (Powered by Magentic UI)
         </div>
       </div>
     </div>

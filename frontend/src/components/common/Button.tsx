@@ -48,8 +48,12 @@ export const Button: React.FC<ButtonProps> = ({
   const variantClasses = {
     primary:
       "bg-magenta-800 text-white hover:bg-magenta-900 focus:ring-2 focus:ring-magenta-900",
+    // primary:
+    //  "bg-blue-600 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-400",
     secondary:
       "bg-transparent border border-magenta-800 text-magenta-800 hover:bg-magenta-900/50",
+    // secondary:
+    //   "bg-transparent border border-blue-600 text-blue-600 hover:bg-blue-700/50",
     tertiary: "bg-transparent text-gray-800 hover:text-primary",
     success:
       "bg-green-600 text-white hover:bg-green-700 focus:ring-2 focus:ring-green-400",

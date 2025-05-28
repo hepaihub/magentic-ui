@@ -162,11 +162,9 @@ class TeamManager:
                         logger.error(f"Failed to parse model configurations: {e}")
 
                 # Use model configs from settings if available, otherwise fall back to config
+                orchestrator_config = model_configs.get("orchestrator_client", self.config.get("orchestrator_client", None))
                 model_client_configs = ModelClientConfigs(
-                    orchestrator=model_configs.get(
-                        "orchestrator_client",
-                        self.config.get("orchestrator_client", None),
-                    ),
+                    orchestrator=orchestrator_config,
                     web_surfer=model_configs.get(
                         "web_surfer_client",
                         self.config.get("web_surfer_client", None),

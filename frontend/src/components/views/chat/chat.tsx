@@ -1033,7 +1033,8 @@ export default function ChatView({
               } mx-auto px-4 sm:px-6 md:px-8`}
             >
               <div className="text-secondary text-lg mb-6">
-                Enter a message to get started
+                Welcome to Dr.Sai, Enter a message to get started
+                {/* 欢迎使用Dr.Sai智能体，输入消息开始对话 */}
               </div>
 
               <div className="w-full">

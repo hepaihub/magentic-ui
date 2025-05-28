@@ -709,7 +709,7 @@ const ChatInput = React.forwardRef<{ focus: () => void }, ChatInputProps>(
                     }}
                     placeholder={
                       runStatus === "awaiting_input"
-                        ? "Type your response here and let Magentic-UI know of any changes in the browser."
+                        ? "Type your response here and let Dr. Sai know of any changes in the browser."
                         : enable_upload
                         ? dragOver
                           ? "Drop files here..."

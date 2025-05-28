@@ -44,6 +44,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) => {
   const [allowedlistEnabled, setAllowedlistEnabled] = React.useState(false);
 
   const MODEL_OPTIONS = [
+    { value: "hepai-foundry", label: "HepAI Foundry Template" },
     { value: "azure-ai-foundry", label: "Azure AI Foundry Template" },
     { value: "gpt-4.1-2025-04-14", label: "GPT-4.1" },
     { value: "gpt-4.1-mini-2025-04-14", label: "GPT-4.1 Mini" },
@@ -80,9 +81,9 @@ action_guard_client: *client
   const OPENROUTER_YAML = `model_config: &client
   provider: OpenAIChatCompletionClient
   config:
-    model: "MODEL_NAME"
+    model: "openai/gpt-4o"
     base_url: "https://openrouter.ai/api/v1"
-    api_key: "KEY"
+    api_key: <Your api-key>
     model_info: # change per model
        vision: true 
        function_calling: true # required true for file_surfer, but will still work if file_surfer is not needed
@@ -98,6 +99,22 @@ web_surfer_client: *client
 file_surfer_client: *client
 action_guard_client: *client
 `;
+
+  const HEPAI_FOUNDRY_YAML = `model_config: &client
+  provider: OpenAIChatCompletionClient
+  config:
+    model: "openai/gpt-4o"
+    base_url: "https://aiapi.ihep.ac.cn/apiv2"
+    api_key: "sk-gNgILTOCwworKDCfAUwVaDzVTxUhHxEamLCIeHheMMrXxls"
+    max_retries: 5
+
+  orchestrator_client: *client
+  coder_client: *client
+  web_surfer_client: *client
+  file_surfer_client: *client
+  action_guard_client: *client
+`;
+
 
   React.useEffect(() => {
     if (isOpen) {
@@ -231,6 +248,11 @@ action_guard_client: *client
       if (modelName === "openrouter") {
         handleUpdateConfig({ model_configs: OPENROUTER_YAML });
         message.success("OpenRouter configuration applied");
+        return;
+      }
+      if (modelName === "hepai-foundry") {
+        handleUpdateConfig({ model_configs: HEPAI_FOUNDRY_YAML });
+        message.success("HepAI configuration applied");
         return;
       }
       const yamlLines = config.model_configs?.split("\n") || [];

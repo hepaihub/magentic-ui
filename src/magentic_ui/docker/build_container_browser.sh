@@ -1,0 +1,1 @@
+docker build -t magentic-ui-vnc-browser:latest ./magentic-ui-browser-docker

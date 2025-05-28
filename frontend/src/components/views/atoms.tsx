@@ -3,12 +3,14 @@ import { Loader2, Maximize2, Minimize2, X } from "lucide-react";
 import { createPortal } from "react-dom";
 
 export const LoadingIndicator = ({ size = 16 }: { size: number }) => (
+  // 旋转加载图标
   <div className="inline-flex items-center gap-2 text-accent   mr-2">
     <Loader2 size={size} className="animate-spin" />
   </div>
 );
 
 export const LoadingDots = ({ size = 8 }) => {
+  // 三个点的加载动画
   return (
     <span className="inline-flex items-center gap-2">
       <span

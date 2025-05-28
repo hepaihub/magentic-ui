@@ -18,7 +18,6 @@ const Footer = () => {
   }, []);
   return (
     <div className="text-primary p-1  flex h-1">
-
     </div>
   );
 };
