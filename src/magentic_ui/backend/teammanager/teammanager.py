@@ -159,7 +159,8 @@ class TeamManager:
                     try:
                         model_configs = yaml.safe_load(settings_config["model_configs"])
                     except Exception as e:
-                        logger.error(f"Failed to parse model configurations: {e}")
+                        logger.error(f"Error loading model configs: {e}")
+                        raise e
 
                 # Use model configs from settings if available, otherwise fall back to config
                 orchestrator_config = model_configs.get("orchestrator_client", self.config.get("orchestrator_client", None))
