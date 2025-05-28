@@ -44,9 +44,9 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) => {
   const [allowedlistEnabled, setAllowedlistEnabled] = React.useState(false);
 
   const MODEL_OPTIONS = [
+    { value: "hepai-foundry", label: "HepAI Foundry Template" },
     { value: "gpt-4.1-2025-04-14", label: "OpenAI GPT-4.1" },
     { value: "gpt-4.1-mini-2025-04-14", label: "OpenAI GPT-4.1 Mini" },
-    { value: "hepai-foundry", label: "HepAI Foundry Template" },
     { value: "azure-ai-foundry", label: "Azure AI Foundry Template" },
     { value: "ollama", label: "Ollama (Local)" },
     { value: "openrouter", label: "OpenRouter" },
