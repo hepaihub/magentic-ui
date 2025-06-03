@@ -23,7 +23,8 @@ from .routes import (
     validation,
     ws,
 )
-
+import httpx
+from fastapi.responses import HTMLResponse
 # Initialize application
 app_file_path = os.path.dirname(os.path.abspath(__file__))
 initializer = AppInitializer(settings, app_file_path)
@@ -86,6 +87,8 @@ app.add_middleware(
         "http://127.0.0.1:8000",
         "http://localhost:8001",
         "http://localhost:8081",
+        "http://drsai.ihep.ac.cn",
+        "https://drsai.ihep.ac.cn",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -177,9 +180,16 @@ async def health_check():
         "message": "Service is healthy",
     }
 
+# 加载vnc api
+# from .vnc_router import app as vnc_app
+from .vnc_router import router as vnc_router
+# app.include_router(vnc_router, prefix="/vncapi", tags=["vnc"])
+# app.mount("/vncapi", vnc_app, name="vncapi")
+api.include_router(vnc_router, prefix="/vncapi", tags=["vnc"])
 
 # Mount static file directories
 app.mount("/api", api)
+
 app.mount(
     "/files",
     StaticFiles(directory=initializer.static_root, html=True),
@@ -188,6 +198,7 @@ app.mount(
 app.mount("/", StaticFiles(directory=initializer.ui_root, html=True), name="ui")
 
 # Error handlers
+
 
 
 @app.exception_handler(500)
