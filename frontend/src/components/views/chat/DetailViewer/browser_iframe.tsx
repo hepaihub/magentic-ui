@@ -67,6 +67,7 @@ const BrowserIframe: React.FC<BrowserIframeProps> = ({
 
   // Build VNC URL with parameters
   // const vncUrl = `http://localhost:${novncPort}/vnc.html?autoconnect=true&resize=${
+  // const vncUrl = `https://drsai.ihep.ac.cn:42800/api/novnc?port=${novncPort}`;
   const vncUrl = `http://202.122.37.162:${novncPort}/vnc.html?autoconnect=true&resize=${
     scaling === "remote" ? "remote" : "scale"
   }&show_dot=true&scaling=${scaling}&quality=${quality}&compression=0&view_only=${
