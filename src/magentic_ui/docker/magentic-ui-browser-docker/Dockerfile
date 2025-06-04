@@ -18,6 +18,11 @@ RUN apt-get update && apt-get install -y \
     xdg-utils \
     python3-xdg \
     x11-xserver-utils \
+    x11-utils \
+    ##
+    libgl1-mesa-dri \
+    dbus-x11 \
+    ##
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 

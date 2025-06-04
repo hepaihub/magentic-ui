@@ -22,6 +22,9 @@ from .input_func import InputFuncType, make_agentchat_input_func
 from .learning.memory_provider import MemoryControllerProvider
 
 
+from .agents.drsai_agents.tools import get_weather
+from .agents.drsai_agents.drsai_agent import MagenticAgent 
+
 async def get_task_team(
     magentic_ui_config: Optional[MagenticUIConfig] = None,
     input_func: Optional[InputFuncType] = None,
@@ -221,8 +224,17 @@ async def get_task_team(
     else:
         memory_provider = None
 
+    # Dr.Sai's agent
+    Weather_Agent = MagenticAgent(
+        name="Weather_Agent",
+        model_client=model_client_coder,
+        description="An agent that provides weather information.",
+        tools=[get_weather],
+    )
+
     team = GroupChat(
-        participants=[web_surfer, user_proxy, coder_agent, file_surfer],
+        # participants=[web_surfer, user_proxy, coder_agent, file_surfer],
+        participants=[Weather_Agent, web_surfer, user_proxy, coder_agent, file_surfer],
         orchestrator_config=orchestrator_config,
         model_client=model_client_orch,
         memory_provider=memory_provider,

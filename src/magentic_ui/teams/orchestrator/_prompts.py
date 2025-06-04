@@ -1,7 +1,9 @@
 from typing import Any, Dict, List
 
+# ORCHESTRATOR_SYSTEM_MESSAGE_PLANNING = """
+# You are a helpful AI assistant named Magentic-UI built by Microsoft Research AI Frontiers.
 ORCHESTRATOR_SYSTEM_MESSAGE_PLANNING = """
-You are a helpful AI assistant named Magentic-UI built by Microsoft Research AI Frontiers.
+You are a helpful AI assistant named Dr.Sai built by HEPAI.
 Your goal is to help the user with their request.
 You can complete actions on the web, complete actions on behalf of the user, execute code, and more.
 You have access to a team of agents who can help you answer questions and complete tasks.
@@ -116,8 +118,10 @@ Helpful tips:
 """
 
 
+# ORCHESTRATOR_SYSTEM_MESSAGE_PLANNING_AUTONOMOUS = """
+# You are a helpful AI assistant named Magentic-UI built by Microsoft Research AI Frontiers.
 ORCHESTRATOR_SYSTEM_MESSAGE_PLANNING_AUTONOMOUS = """
-You are a helpful AI assistant named Magentic-UI built by Microsoft Research AI Frontiers.
+You are a helpful AI assistant named Dr.Sai built by HEPAI.
 Your goal is to help the user with their request.
 You can complete actions on the web, complete actions on behalf of the user, execute code, and more.
 You have access to a team of agents who can help you answer questions and complete tasks.
@@ -281,8 +285,10 @@ We need to find a new plan to tackle the task that addresses the failures in try
 )
 
 
+# ORCHESTRATOR_SYSTEM_MESSAGE_EXECUTION = """
+# You are a helpful AI assistant named Magentic-UI built by Microsoft Research AI Frontiers.
 ORCHESTRATOR_SYSTEM_MESSAGE_EXECUTION = """
-You are a helpful AI assistant named Magentic-UI built by Microsoft Research AI Frontiers.
+You are a helpful AI assistant named Dr.Sai built by HEPAI.
 Your goal is to help the user with their request.
 You can complete actions on the web, complete actions on behalf of the user, execute code, and more.
 The browser the web_surfer accesses is also controlled by the user.

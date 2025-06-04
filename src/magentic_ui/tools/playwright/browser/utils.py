@@ -4,15 +4,37 @@ import socket
 from autogen_core import ComponentModel
 from .vnc_docker_playwright_browser import VncDockerPlaywrightBrowser
 
+import random
 
-def get_available_port() -> tuple[int, socket.socket]:
+def get_available_port(min_port: int = 40000, max_port: int = 65000) -> tuple[int, socket.socket]:
     """
     Get an available port on the local machine.
     """
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind(("127.0.0.1", 0))
-    port = s.getsockname()[1]
-    return port, s
+    # s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # s.bind(("127.0.0.1", 0))
+    # port = s.getsockname()[1]
+    # return port, s
+
+    max_attempts = 100  # 最大随机尝试次数
+    for _ in range(max_attempts):
+        port = random.randint(min_port, max_port)
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.bind(("127.0.0.1", port))
+            return port, s
+        except OSError:
+            s.close()
+
+    # 如果随机尝试失败，改为顺序扫描
+    for port in range(min_port, max_port):
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.bind(("127.0.0.1", port))
+            return port, s
+        except OSError:
+            s.close()
+    
+    raise OSError(f"No available ports in range {min_port}-{max_port}")
 
 
 def get_browser_resource_config(

@@ -26,6 +26,7 @@ from .routes import (
 
 # Initialize application
 app_file_path = os.path.dirname(os.path.abspath(__file__))
+settings.API_DOCS = True
 initializer = AppInitializer(settings, app_file_path)
 
 
