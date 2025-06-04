@@ -22,6 +22,7 @@ async def connect_browser_with_retry(
     playwright: Playwright, url: str, timeout: int = 30
 ) -> Browser:
     """Wait for the WebSocket server to be ready."""
+    await asyncio.sleep(2)  # Initial wait before retrying
     start_time = asyncio.get_event_loop().time()
     while asyncio.get_event_loop().time() - start_time < timeout:
         try:

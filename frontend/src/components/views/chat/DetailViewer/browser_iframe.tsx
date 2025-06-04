@@ -73,6 +73,8 @@ const BrowserIframe: React.FC<BrowserIframeProps> = ({
     viewOnly ? 1 : 0
   }`;
 
+  // const vncUrl = `https://drsai.ihep.ac.cn:42800/api/novnc?port=${novncPort}`;
+
   return (
     <div
       className={`relative w-full h-full ${className}`}

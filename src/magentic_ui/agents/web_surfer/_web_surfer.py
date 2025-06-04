@@ -377,11 +377,17 @@ class WebSurfer(BaseChatAgent, Component[WebSurferConfig]):
         self._last_download = None
         self._prior_metadata_hash = None
 
-        await self._browser.__aenter__()
+        await self._browser.__aenter__()  # 启动浏览器
+        
 
         if isinstance(self._browser, VncDockerPlaywrightBrowser):
             self.novnc_port = self._browser.novnc_port
             self.playwright_port = self._browser.playwright_port
+            
+            # 启动后显示连接地址：
+            logger.info(
+                f"WebSurfer started with browser at `http://localhost:{self._browser.novnc_port}/vnc.html?autoconnect=true&amp;resize=scale&amp;show_dot=true&amp;scaling=local&amp;quality=7&amp;compression=0&amp;view_only=0`"
+            )
 
         self._context = self._browser.browser_context
 

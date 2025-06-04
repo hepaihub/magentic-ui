@@ -16,11 +16,11 @@ from src.magentic_ui.backend.cli import (
     check_python_image,
     build_browser_image,
     build_python_image)
-
 from src.magentic_ui.backend.web.app import app
 
 
 here = Path(__file__).parent.resolve()
+
 
 def run(
     host: str = "0.0.0.0",
