@@ -40,6 +40,7 @@ dependencies = [
     "pyyaml",
     "html2text",
     "psutil",
+    "dotmap",
 ]
 
 [project.optional-dependencies]
@@ -125,7 +126,10 @@ reportMissingTypeStubs = false
 
 [tool.hatch.build.targets.wheel]
 include-package-data = true
-packages = ["src/magentic_ui"]
+packages = [
+    "src/magentic_ui",
+    "src/besiii"
+    ]
 
 [tool.hatch.version]
 path = "src/magentic_ui/version.py"

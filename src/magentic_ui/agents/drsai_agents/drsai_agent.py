@@ -1,6 +1,6 @@
 from drsai import AssistantAgent, HepAIChatCompletionClient
 import asyncio
-from typing import AsyncGenerator,Optional, List, Dict, Tuple, Sequence, Any, Awaitable, Callable
+from typing import AsyncGenerator,Optional, List, Dict, Tuple, Sequence, Any, Awaitable, Callable, Union
 from loguru import logger
 # from datetime import datetime
 from pydantic import BaseModel
@@ -18,7 +18,7 @@ from autogen_agentchat.messages import (
     # HandoffMessage,
     # MemoryQueryEvent,
     # ModelClientStreamingChunkEvent,
-    StructuredMessage,
+    # StructuredMessage,
     # StructuredMessageFactory,
     TextMessage,
     ThoughtEvent,
@@ -33,7 +33,7 @@ from autogen_core.models import (
     CreateResult,
     FunctionExecutionResult,
     FunctionExecutionResultMessage,
-    # LLMMessage,
+    LLMMessage,
     # ModelFamily,
     SystemMessage,
 )
@@ -78,6 +78,8 @@ class MagenticAgent(AssistantAgent):
         self.is_paused = False
         self._paused = asyncio.Event()
 
+        self._rag_result = []
+
     async def lazy_init(self) -> None:
         """Initialize the tools and models needed by the agent."""
         pass
@@ -102,6 +104,73 @@ class MagenticAgent(AssistantAgent):
         """Resume the agent by clearing the paused state."""
         self.is_paused = False
         self._paused.clear()
+
+    async def _call_llm(
+        self,
+        model_client: ChatCompletionClient,
+        model_client_stream: bool,
+        system_messages: List[SystemMessage],
+        # messages: List[BaseChatMessage],
+        model_context: ChatCompletionContext,
+        workbench: Workbench,
+        handoff_tools: List[BaseTool[Any, Any]],
+        agent_name: str,
+        cancellation_token: CancellationToken,
+        output_content_type: type[BaseModel] | None,
+    ) -> AsyncGenerator[Union[CreateResult, ModelClientStreamingChunkEvent], None]:
+        """
+        Perform a model inference and yield either streaming chunk events or the final CreateResult.
+        """
+        all_messages = await model_context.get_messages()
+        # all_messages = await self.textmessages2llm_messages(messages) ## 使用外部消息生成回复
+        
+        llm_messages: List[LLMMessage] = self._get_compatible_context(model_client=model_client, messages=system_messages + all_messages)
+
+        # 自定义的memory_function，用于RAG检索等功能，为大模型回复增加最新的知识
+        if self._memory_function is not None:
+            # llm_messages = await self._call_memory_function(llm_messages)
+            memory_messages = await self.llm_messages2oai_messages(llm_messages)
+            rag_result: dict = await self._memory_function(memory_messages, **self._user_params)
+            llm_messages = await self.oai_messages2llm_messages(rag_result["messages"])  # 将RAG检索结果转换为LLM消息
+            if rag_result["retrieve_txt"]:
+                self._rag_result.append(rag_result["retrieve_txt"])  # 保存RAG检索结果
+            yield ModelClientStreamingChunkEvent(content = "\n**RAG retrieve:**\n", source=agent_name)
+            # await asyncio.sleep(0.1)
+            yield ModelClientStreamingChunkEvent(content = "\n<think>\n", source=agent_name)
+            # await asyncio.sleep(0.1)
+            yield ModelClientStreamingChunkEvent(content = rag_result["retrieve_txt"][0], source=agent_name)
+            # await asyncio.sleep(0.1)
+            yield ModelClientStreamingChunkEvent(content = "\n</think>\n", source=agent_name)
+
+        all_tools = (await workbench.list_tools()) + handoff_tools
+        # model_result: Optional[CreateResult] = None
+        if self._allow_reply_function:
+            # 自定义的reply_function，用于自定义对话回复的定制
+            async for chunk in self._call_reply_function(
+                llm_messages, 
+                model_client = model_client, 
+                workbench=workbench,
+                handoff_tools=handoff_tools,
+                tools = all_tools,
+                agent_name=agent_name, 
+                cancellation_token=cancellation_token,
+                thread = self._thread,
+                thread_mgr = self._thread_mgr,
+            ):
+                # if isinstance(chunk, CreateResult):
+                #     model_result = chunk
+                yield chunk
+        else:
+           async for chunk in self.call_llm(
+                agent_name = agent_name,
+                model_client = model_client,
+                llm_messages = llm_messages, 
+                tools = all_tools, 
+                model_client_stream = model_client_stream,
+                cancellation_token = cancellation_token,
+                output_content_type = output_content_type,
+           ):
+               yield chunk
 
     async def on_messages_stream(
         self, messages: Sequence[BaseChatMessage], cancellation_token: CancellationToken
