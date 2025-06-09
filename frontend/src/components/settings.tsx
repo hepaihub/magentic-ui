@@ -44,6 +44,7 @@ const SettingsMenu: React.FC<SettingsMenuProps> = ({ isOpen, onClose }) => {
   const [allowedlistEnabled, setAllowedlistEnabled] = React.useState(false);
 
   const MODEL_OPTIONS = [
+    { value: "drsai-foundry", label: "Dr.Sai Foundry Template" },
     { value: "hepai-foundry", label: "HepAI Foundry Template" },
     { value: "gpt-4.1-2025-04-14", label: "OpenAI GPT-4.1" },
     { value: "gpt-4.1-mini-2025-04-14", label: "OpenAI GPT-4.1 Mini" },
@@ -137,18 +138,47 @@ action_guard_client: *client
 `;
 
   const HEPAI_FOUNDRY_YAML = `model_config: &client
-  provider: OpenAIChatCompletionClient
+  provider: drsai.HepAIChatCompletionClient
   config:
     model: "openai/gpt-4o"
     base_url: "https://aiapi.ihep.ac.cn/apiv2"
     api_key: "{{AUTO_PERSONAL_KEY_FOR_DR_SAI}}"
     max_retries: 5
 
-  orchestrator_client: *client
-  coder_client: *client
-  web_surfer_client: *client
-  file_surfer_client: *client
-  action_guard_client: *client
+orchestrator_client: *client
+coder_client: *client
+web_surfer_client: *client
+file_surfer_client: *client
+action_guard_client: *client
+`;
+
+ const DRSAI_FOUNDRY_YAML = `model_config: &client
+  provider: drsai.HepAIChatCompletionClient
+  config:
+    model: deepseek-v3-250324
+    api_key: 68d92faa-9b6e-4ba4-9fdc-b6055ce6c5bc
+    base_url: "https://ark.cn-beijing.volces.com/api/v3"
+    max_retries: 10
+
+r1_config: &r1_client
+  provider: drsai.HepAIChatCompletionClient
+  config:
+    model: deepseek-r1-250120
+    api_key: 68d92faa-9b6e-4ba4-9fdc-b6055ce6c5bc
+    base_url: "https://ark.cn-beijing.volces.com/api/v3"
+    max_retries: 10
+
+mode: drsai_besiii
+
+orchestrator_client: *client
+web_surfer_client: *client
+file_surfer_client: *client
+action_guard_client: *client
+planner_client: *client
+coder_client: *r1_client
+tester_client: *r1_client
+host_client: *r1_client
+parser_client: *client
 `;
 
 
@@ -289,6 +319,11 @@ action_guard_client: *client
       if (modelName === "hepai-foundry") {
         handleUpdateConfig({ model_configs: HEPAI_FOUNDRY_YAML });
         message.success("HepAI configuration applied");
+        return;
+      }
+      if (modelName === "drsai-foundry") {
+        handleUpdateConfig({ model_configs: DRSAI_FOUNDRY_YAML });
+        message.success("Dr.Sai configuration applied");
         return;
       }
       if (modelName === "ollama") {

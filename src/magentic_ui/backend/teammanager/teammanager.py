@@ -36,6 +36,9 @@ from ..datamodel.db import Run
 from ..utils.utils import get_modified_files, decompress_state
 from ...tools.playwright.browser.utils import get_browser_resource_config
 
+# besiii
+from besiii.magentic_utils.drsai_magentic_ui_config import DrSaiModelClientConfigs, DrSaiMagenticUIConfig
+from ...task_team import get_task_team_drsai
 
 class RunEventLogger(logging.Handler):
     """Event logger that queues LLMCallEvents for streaming"""
@@ -161,44 +164,101 @@ class TeamManager:
                     except Exception as e:
                         logger.error(f"Error loading model configs: {e}")
                         raise e
-
-                # Use model configs from settings if available, otherwise fall back to config
+                
                 orchestrator_config = model_configs.get("orchestrator_client", self.config.get("orchestrator_client", None))
-                model_client_configs = ModelClientConfigs(
-                    orchestrator=orchestrator_config,
-                    web_surfer=model_configs.get(
-                        "web_surfer_client",
-                        self.config.get("web_surfer_client", None),
-                    ),
-                    coder=model_configs.get(
-                        "coder_client", self.config.get("coder_client", None)
-                    ),
-                    file_surfer=model_configs.get(
-                        "file_surfer_client",
-                        self.config.get("file_surfer_client", None),
-                    ),
-                    action_guard=model_configs.get(
-                        "action_guard_client",
-                        self.config.get("action_guard_client", None),
-                    ),
-                )
+                if model_configs.get("mode") in ["drsai_besiii", "besiii"]:
+                    # Use model configs from settings if available, otherwise fall back to config
+                    model_client_configs = DrSaiModelClientConfigs(
+                        orchestrator=orchestrator_config,
+                        web_surfer=model_configs.get(
+                            "web_surfer_client",
+                            self.config.get("web_surfer_client", None),
+                        ),
+                        coder=model_configs.get(
+                            "coder_client", self.config.get("coder_client", None)
+                        ),
+                        file_surfer=model_configs.get(
+                            "file_surfer_client",
+                            self.config.get("file_surfer_client", None),
+                        ),
+                        action_guard=model_configs.get(
+                            "action_guard_client",
+                            self.config.get("action_guard_client", None),
+                        ),
+                        planner=model_configs.get(
+                            "planner_client",
+                            self.config.get("planner_client", None),
+                        ),
+                        tester=model_configs.get(
+                            "tester_client",
+                            self.config.get("tester_client", None),
+                        ),
+                        host=model_configs.get(
+                            "host_client",
+                            self.config.get("host_client", None),
+                        ),
+                        parser=model_configs.get(
+                            "parser_client",
+                            self.config.get("parser_client", None),
+                        ),
+                    )
 
-                magentic_ui_config = MagenticUIConfig(
-                    **(settings_config or {}),
-                    model_client_configs=model_client_configs,
-                    playwright_port=playwright_port,
-                    novnc_port=novnc_port,
-                    inside_docker=self.inside_docker,
-                )
+                    magentic_ui_config = DrSaiMagenticUIConfig(
+                        **(settings_config or {}),
+                        model_client_configs=model_client_configs,
+                        playwright_port=playwright_port,
+                        novnc_port=novnc_port,
+                        inside_docker=self.inside_docker,
+                    )
 
-                self.team = cast(
-                    Team,
-                    await get_task_team(
-                        magentic_ui_config=magentic_ui_config,
-                        input_func=input_func,
-                        paths=paths,
-                    ),
-                )
+                    self.team = cast(
+                        Team,
+                        await get_task_team_drsai(
+                            magentic_ui_config=magentic_ui_config,
+                            input_func=input_func,
+                            paths=paths,
+                        ),
+                    )
+                    
+                else:
+                    # Use model configs from settings if available, otherwise fall back to config
+                    model_client_configs = ModelClientConfigs(
+                        orchestrator=orchestrator_config,
+                        web_surfer=model_configs.get(
+                            "web_surfer_client",
+                            self.config.get("web_surfer_client", None),
+                        ),
+                        coder=model_configs.get(
+                            "coder_client", self.config.get("coder_client", None)
+                        ),
+                        file_surfer=model_configs.get(
+                            "file_surfer_client",
+                            self.config.get("file_surfer_client", None),
+                        ),
+                        action_guard=model_configs.get(
+                            "action_guard_client",
+                            self.config.get("action_guard_client", None),
+                        ),
+                    )
+
+                    magentic_ui_config = MagenticUIConfig(
+                        **(settings_config or {}),
+                        model_client_configs=model_client_configs,
+                        playwright_port=playwright_port,
+                        novnc_port=novnc_port,
+                        inside_docker=self.inside_docker,
+                    )
+
+                    self.team = cast(
+                        Team,
+                        await get_task_team(
+                            magentic_ui_config=magentic_ui_config,
+                            input_func=input_func,
+                            paths=paths,
+                        ),
+                    )
+
+
                 if hasattr(self.team, "_participants"):
                     for agent in cast(list[ChatAgent], self.team._participants):  # type: ignore
                         if isinstance(agent, WebSurfer):
@@ -247,6 +307,118 @@ class TeamManager:
             logger.error(f"Error creating team: {e}")
             await self.close()
             raise
+        
+    # async def _create_team(
+    #     self,
+    #     team_config: Union[str, Path, Dict[str, Any], ComponentModel],
+    #     state: Optional[Mapping[str, Any] | str] = None,
+    #     input_func: Optional[InputFuncType] = None,
+    #     env_vars: Optional[List[EnvironmentVariable]] = None,
+    #     settings_config: dict[str, Any] = {},
+    #     *,
+    #     paths: RunPaths,
+    # ) -> tuple[Team, int, int]:
+    #     """Create team instance from config"""
+
+    #     _, novnc_port, playwright_port = get_browser_resource_config(
+    #         paths.external_run_dir, -1, -1, self.inside_docker
+    #     )
+    #     try:
+    #         if not self.load_from_config:
+    #             # Load model configurations from settings if provided
+    #             model_configs: Dict[str, Any] = {}
+    #             if settings_config.get("model_configs"):
+    #                 try:
+    #                     model_configs = yaml.safe_load(settings_config["model_configs"])
+    #                 except Exception as e:
+    #                     logger.error(f"Error loading model configs: {e}")
+    #                     raise e
+
+    #             # Use model configs from settings if available, otherwise fall back to config
+    #             orchestrator_config = model_configs.get("orchestrator_client", self.config.get("orchestrator_client", None))
+    #             model_client_configs = ModelClientConfigs(
+    #                 orchestrator=orchestrator_config,
+    #                 web_surfer=model_configs.get(
+    #                     "web_surfer_client",
+    #                     self.config.get("web_surfer_client", None),
+    #                 ),
+    #                 coder=model_configs.get(
+    #                     "coder_client", self.config.get("coder_client", None)
+    #                 ),
+    #                 file_surfer=model_configs.get(
+    #                     "file_surfer_client",
+    #                     self.config.get("file_surfer_client", None),
+    #                 ),
+    #                 action_guard=model_configs.get(
+    #                     "action_guard_client",
+    #                     self.config.get("action_guard_client", None),
+    #                 ),
+    #             )
+
+    #             magentic_ui_config = MagenticUIConfig(
+    #                 **(settings_config or {}),
+    #                 model_client_configs=model_client_configs,
+    #                 playwright_port=playwright_port,
+    #                 novnc_port=novnc_port,
+    #                 inside_docker=self.inside_docker,
+    #             )
+
+    #             self.team = cast(
+    #                 Team,
+    #                 await get_task_team(
+    #                     magentic_ui_config=magentic_ui_config,
+    #                     input_func=input_func,
+    #                     paths=paths,
+    #                 ),
+    #             )
+    #             if hasattr(self.team, "_participants"):
+    #                 for agent in cast(list[ChatAgent], self.team._participants):  # type: ignore
+    #                     if isinstance(agent, WebSurfer):
+    #                         novnc_port = agent.novnc_port
+    #                         playwright_port = agent.playwright_port
+
+    #             if state:
+    #                 if isinstance(state, str):
+    #                     try:
+    #                         # Try to decompress if it's compressed
+    #                         state_dict = decompress_state(state)
+    #                         await self.team.load_state(state_dict)
+    #                     except Exception:
+    #                         # If decompression fails, assume it's a regular JSON string
+    #                         state_dict = json.loads(state)
+    #                         await self.team.load_state(state_dict)
+    #                 else:
+    #                     await self.team.load_state(state)
+
+    #             return self.team, novnc_port, playwright_port
+
+    #         if isinstance(team_config, (str, Path)):
+    #             config = await self.load_from_file(team_config)
+    #         elif isinstance(team_config, dict):
+    #             config = team_config
+    #         else:
+    #             config = team_config.model_dump()
+
+    #         # Load env vars into environment if provided
+    #         if env_vars:
+    #             logger.info("Loading environment variables")
+    #             for var in env_vars:
+    #                 os.environ[var.name] = var.value
+
+    #         self.team = cast(Team, GroupChat.load_component(config))
+
+    #         if hasattr(self.team, "_participants"):
+    #             for agent in cast(list[ChatAgent], self.team._participants):  # type: ignore
+    #                 if hasattr(agent, "input_func"):
+    #                     agent.input_func = input_func  # type: ignore
+    #                 if isinstance(agent, WebSurfer):
+    #                     novnc_port = agent.novnc_port or -1
+    #                     playwright_port = agent.playwright_port or -1
+    #         return self.team, novnc_port, playwright_port
+    #     except Exception as e:
+    #         logger.error(f"Error creating team: {e}")
+    #         await self.close()
+    #         raise
 
     async def run_stream(
         self,
@@ -297,16 +469,17 @@ class TeamManager:
                 )
                 known_files = {file["name"] for file in initial_files}
 
-                yield TextMessage(
-                    source="system",
-                    content=f"Browser noVNC address can be found at http://localhost:{_novnc_port}/vnc.html",
-                    metadata={
-                        "internal": "no",
-                        "type": "browser_address",
-                        "novnc_port": str(_novnc_port),
-                        "playwright_port": str(_playwright_port),
-                    },
-                )
+                # TODO：不让前端启动noVNC，
+                # yield TextMessage(
+                #     source="system",
+                #     content=f"Browser noVNC address can be found at http://localhost:{_novnc_port}/vnc.html",
+                #     metadata={
+                #         "internal": "no",
+                #         "type": "browser_address",
+                #         "novnc_port": str(_novnc_port),
+                #         "playwright_port": str(_playwright_port),
+                #     },
+                # )
 
                 async for message in self.team.run_stream(  # type: ignore
                     task=task, cancellation_token=cancellation_token

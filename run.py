@@ -6,12 +6,13 @@ from typing_extensions import Annotated
 import typer
 from typing import Optional
 from pathlib import Path
-from contextlib import asynccontextmanager
+# from contextlib import asynccontextmanager
 import uvicorn
 
 
 from src.magentic_ui.backend.cli import (
-    ui, get_env_file_path,
+    # ui, 
+    get_env_file_path,
     check_docker_running,
     check_browser_image,
     check_python_image,
