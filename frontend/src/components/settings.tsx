@@ -141,7 +141,7 @@ action_guard_client: *client
   config:
     model: "openai/gpt-4o"
     base_url: "https://aiapi.ihep.ac.cn/apiv2"
-    api_key: "sk-gNgILTOCwworKDCfAUwVaDzVTxUhHxEamLCIeHheMMrXxls"
+    api_key: "{{AUTO_PERSONAL_KEY_FOR_DR_SAI}}"
     max_retries: 5
 
   orchestrator_client: *client

@@ -56,7 +56,9 @@ const Provider = ({ children }: any) => {
     setUserState(user);
   };
 
-  const [userState, setUserState] = useState<IUser | null>(initUser);
+  // const [userState, setUserState] = useState<IUser | null>(initUser);
+  // 不初始化用户
+  const [userState, setUserState] = useState<IUser | null>(null);
 
   React.useEffect(() => {
     const storedEmail = getLocalStorage("user_email");

@@ -5,7 +5,8 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     DATABASE_URI: str = "sqlite:///./magentic_ui.db"
-    API_DOCS: bool = False
+    # API_DOCS: bool = False
+    API_DOCS: bool = True
     CLEANUP_INTERVAL: int = 300  # 5 minutes
     SESSION_TIMEOUT: int = 3600 * 24  # 24 hour
     CONFIG_DIR: str = "configs"  # Default config directory relative to app_root

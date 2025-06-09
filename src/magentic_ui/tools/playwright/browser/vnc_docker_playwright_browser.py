@@ -180,6 +180,7 @@ class VncDockerPlaywrightBrowser(
                 "PLAYWRIGHT_PORT": str(self._playwright_port),
                 "NO_VNC_PORT": str(self._novnc_port),
             },
+            security_opt=["seccomp=unconfined"],  # <--- 添加这一行
         )
 
     def _to_config(self) -> VncDockerPlaywrightBrowserConfig:

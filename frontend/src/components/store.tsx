@@ -31,22 +31,35 @@ const defaultConfig: GeneralConfig = {
   allow_for_replans: true,
   do_bing_search: false,
   websurfer_loop: false,
+//   model_configs: `model_config: &client
+//   provider: OpenAIChatCompletionClient
+//   config:
+//     model: gpt-4.1-2025-04-14
+//   max_retries: 5
+// model_config_action_guard: &client_action_guard
+//   provider: OpenAIChatCompletionClient
+//   config:
+//     model: gpt-4.1-nano-2025-04-14
+//   max_retries: 5
+
+// orchestrator_client: *client
+// coder_client: *client
+// web_surfer_client: *client
+// file_surfer_client: *client
+// action_guard_client: *client_action_guard`,
   model_configs: `model_config: &client
   provider: OpenAIChatCompletionClient
   config:
-    model: gpt-4.1-2025-04-14
-  max_retries: 5
-model_config_action_guard: &client_action_guard
-  provider: OpenAIChatCompletionClient
-  config:
-    model: gpt-4.1-nano-2025-04-14
-  max_retries: 5
+    model: "openai/gpt-4o"
+    base_url: "https://aiapi.ihep.ac.cn/apiv2"
+    api_key: "{{AUTO_PERSONAL_KEY_FOR_DR_SAI}}"
+    max_retries: 5
 
-orchestrator_client: *client
-coder_client: *client
-web_surfer_client: *client
-file_surfer_client: *client
-action_guard_client: *client_action_guard`,
+  orchestrator_client: *client
+  coder_client: *client
+  web_surfer_client: *client
+  file_surfer_client: *client
+  action_guard_client: *client`,
   retrieve_relevant_plans: "never",
 };
 

@@ -181,14 +181,21 @@ async def health_check():
     }
 
 # 加载vnc api
-# from .vnc_router import app as vnc_app
+
 from .vnc_router import router as vnc_router
-# app.include_router(vnc_router, prefix="/vncapi", tags=["vnc"])
-# app.mount("/vncapi", vnc_app, name="vncapi")
 api.include_router(vnc_router, prefix="/vncapi", tags=["vnc"])
 
 # Mount static file directories
 app.mount("/api", api)
+
+# 加载统一认证模块
+from src.sso.ihep_sso_router import router as ihep_sso_router
+from src.sso.ihep_sso_router import oauth_config
+from starlette.middleware.sessions import SessionMiddleware
+app.add_middleware(SessionMiddleware, secret_key=oauth_config.meddleware_secret)
+app.include_router(ihep_sso_router, prefix="/umt", tags=["umt"])
+
+
 
 app.mount(
     "/files",
