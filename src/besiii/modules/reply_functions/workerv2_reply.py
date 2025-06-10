@@ -85,13 +85,13 @@ async def woker_v2_reply_function(
     """
 
     worker_name = "hepai/code-worker-v2-mapping"  # The name of the worker to connect to
-    # base_url = "https://aiapi.ihep.ac.cn/apiv2" 
-    base_url = "http://beslogin005.ihep.ac.cn:42899/apiv2"
+    base_url = "https://aiapi.ihep.ac.cn/apiv2" 
+    # base_url = "http://beslogin005.ihep.ac.cn:42899/apiv2"
 
     # 获取用户的apikey
     # api_key=thread.metadata["extra_requests"].get('apikey',None)
-    # api_key = model_client._client.api_key or None
-    api_key = "sk-QZtRpBrOPeKkdlYXjErUSNDybUBCCLQYWKUXCiyoEPJNLEZ"
+    api_key = model_client._client.api_key or None
+    # api_key = "sk-****"
     if not api_key:
         raise Exception("No apikey found in thread.metadata")
     
