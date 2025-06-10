@@ -16,7 +16,8 @@ require("dotenv").config({
 const config: GatsbyConfig = {
   pathPrefix: process.env.PREFIX_PATH_VALUE || "",
   siteMetadata: {
-    title: `Magentic-UI`,
+    // title: `Magentic-UI`,
+    tille: "Dr.Sai",
     description: `Human-centered web agent interface`,
     siteUrl: `http://tbd.place`,
   },

@@ -8,6 +8,8 @@ from typing import Optional
 from pathlib import Path
 # from contextlib import asynccontextmanager
 import uvicorn
+
+
 from src.magentic_ui.backend.cli import (
     # ui, 
     get_env_file_path,
@@ -104,6 +106,11 @@ def run(
     with open(env_file_path, "w") as temp_env:
         for key, value in env_vars.items():
             temp_env.write(f"{key}={value}\n")
+            
+    # # 添加统一认证
+    # from src.sso.ihep_sso_router import router as ihep_sso_router
+    # # from src.sso.ihep_sso_router import oaut
+    # app.include_router(ihep_sso_router, prefix="/umt")
             
     uvicorn.run(
         # "magentic_ui.backend.web.app:app",

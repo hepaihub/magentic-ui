@@ -11,7 +11,8 @@ type SignInModalProps = {
 
 const SignInModal = ({ isVisible, onClose }: SignInModalProps) => {
   const { user, setUser } = React.useContext(appContext);
-  const [email, setEmail] = React.useState(user?.email || "default");
+  const [email, setEmail] = React.useState(user?.email || "");
+  // const [email, setEmail] = React.useState(user?.email || "default");
 
   const isAlreadySignedIn = !!user?.email;
 

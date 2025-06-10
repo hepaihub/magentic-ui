@@ -28,7 +28,7 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({
               </div>
             </div>
             <h3 className="text-lg font-medium text-primary mb-4 text-center">
-              Magentic-UI can't see what you do when you take control.
+              Dr. Sai can't see what you do when you take control.
             </h3>
             <p className="text-base mb-4 text-primary">
               Please describe what you did when you are ready to hand back
@@ -51,7 +51,7 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({
                 onClick={onSubmit}
                 className="font-medium shadow-md"
               >
-                Give control back to Magentic-UI
+                Give control back to Dr. Sai
               </Button>
             </div>
           </div>

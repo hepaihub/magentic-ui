@@ -8,6 +8,7 @@ import SignInModal from "./signin";
 import SettingsMenu from "./settings";
 import logo from "../assets/logo.svg";
 import { Button } from "./common/Button";
+import UserProfileModal from "./userProfile";
 
 type ContentHeaderProps = {
   onMobileMenuToggle: () => void;
@@ -17,6 +18,7 @@ type ContentHeaderProps = {
   onNewSession: () => void;
 };
 
+
 const ContentHeader = ({
   isSidebarOpen,
   onToggleSidebar,
@@ -25,7 +27,9 @@ const ContentHeader = ({
   const { user } = React.useContext(appContext);
   useConfigStore();
   const [isEmailModalOpen, setIsEmailModalOpen] = React.useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = React.useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
+
 
   return (
     <div className="sticky top-0 bg-primary">
@@ -65,7 +69,8 @@ const ContentHeader = ({
           </div>
           <div className="flex items-center space-x-2">
             <img src={logo} alt="Dr.Sai Logo" className="h-10 w-10" />
-            <div className="text-primary text-2xl font-bold">Dr. Sai</div>
+            {/* <div className="text-primary text-2xl font-bold">Dr.Sai</div> */}
+            <div className="text-primary text-2xl font-bold">Dr.Sai</div>
           </div>
         </div>
 
@@ -73,10 +78,11 @@ const ContentHeader = ({
         <div className="flex items-center space-x-4">
           {/* User Profile */}
           {user && (
-            <Tooltip title="View or update your profile">
+            <Tooltip title="用户信息">
               <div
                 className="flex items-center space-x-2 cursor-pointer"
-                onClick={() => setIsEmailModalOpen(true)}
+                // onClick={() => setIsEmailModalOpen(true)}
+                onClick={() => setIsProfileModalOpen(true)}
               >
                 {user.avatar_url ? (
                   <img
@@ -112,6 +118,11 @@ const ContentHeader = ({
       <SignInModal
         isVisible={isEmailModalOpen}
         onClose={() => setIsEmailModalOpen(false)}
+      />
+      <UserProfileModal
+        isVisible={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        user={user}
       />
       <SettingsMenu
         isOpen={isSettingsOpen}

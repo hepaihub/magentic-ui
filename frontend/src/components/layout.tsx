@@ -34,15 +34,25 @@ const MagenticUILayout = ({
   const { isExpanded } = sidebar;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
-  // Mimic sign-in: if no user or user.email, set default user and localStorage
   React.useEffect(() => {
-    if (!user?.email) {
-      const defaultEmail = "default";
-      setUser({ ...user, email: defaultEmail, name: defaultEmail });
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem("user_email", defaultEmail);
+
+    // 检查用户信息是否存在
+    if (!user) {
+      // 如果没有用户信息，尝试从本地存储获取
+      const email = localStorage.getItem("user_email");
+      const name = localStorage.getItem("user_name") || email;
+      if (email) {
+        setUser({ ...user, email, name });
+        // 打印日志
+        console.log("User email found in local storage:", email);
+      } else {
+        // 没有本地用户信息，跳转到sso-login
+        if (typeof window !== "undefined") {
+          window.location.href = "/sso-login";
+        }
       }
     }
+    
   }, [user, setUser]);
 
   // Close mobile menu on route change
