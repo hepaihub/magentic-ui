@@ -17,31 +17,22 @@ class PersonalKeyConfigFetcher:
     def get_personal_key(self, username: str) -> str:
         """获取个人密钥"""
         
-        api_key: APIKeyInfo = self.client.fetch_api_key(username=username)
-        if not api_key or not api_key.api_key:
-            raise ValueError(f"API key for user {username} not found.")
-        return api_key.api_key
+        service_mode = os.getenv("SERVICE_MODE")
+        if service_mode.lower() in ['dev', 'develop', 'development']:
+            api_key = os.getenv("HEPAI_API_KEY")
+            assert api_key, "未找到HEPAI_API_KEY，在开发模式下请在.env中添加"
+            return api_key
+        else:
+            api_key: APIKeyInfo = self.client.fetch_api_key(username=username)
+            if not api_key or not api_key.api_key:
+                raise ValueError(f"API key for user {username} not found.")
+            return api_key.api_key
         
     
     def get_default_config(self, username: str) -> Dict[str, Any]:
         """获取默认配置"""
         
         personal_key = self.get_personal_key(username=username)
-    #     default_model_configs = f"""model_config: &client
-    #     provider: OpenAIChatCompletionClient
-    #     config:
-    #         model: "openai/gpt-4o"
-    #         base_url: "https://aiapi.ihep.ac.cn/apiv2"
-    #         api_key: "{personal_key}"
-    #         max_retries: 5
-            
-    #     orchestrator_client: *client
-    #     coder_client: *client
-    #     web_surfer_client: *client
-    #     file_surfer_client: *client
-    #     action_guard_client: *client
-    # """
-    
     
         default_model_configs = f"""model_config: &client
   provider: drsai.HepAIChatCompletionClient
