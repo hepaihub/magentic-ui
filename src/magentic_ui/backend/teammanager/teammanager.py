@@ -148,6 +148,7 @@ class TeamManager:
         settings_config: dict[str, Any] = {},
         *,
         paths: RunPaths,
+        mode: Optional[str] = None,
     ) -> tuple[Team, int, int]:
         """Create team instance from config"""
 
@@ -166,7 +167,10 @@ class TeamManager:
                         raise e
                 
                 orchestrator_config = model_configs.get("orchestrator_client", self.config.get("orchestrator_client", None))
-                if model_configs.get("mode") in ["drsai_besiii", "besiii"]:
+                
+                mode = mode if mode else model_configs.get("mode", None)
+                # if model_configs.get("mode") in ["drsai_besiii", "besiii"]:
+                if mode in ["drsai_besiii", "besiii"]:
                     # Use model configs from settings if available, otherwise fall back to config
                     model_client_configs = DrSaiModelClientConfigs(
                         orchestrator=orchestrator_config,
@@ -452,8 +456,16 @@ class TeamManager:
         global_new_files: List[Dict[str, str]] = []
         try:
             # TODO: This might cause problems later if we are not careful
+        
+            # TODO: 同时支持drsai模式和websurfer模式
+            if "Search arXiv for the latest papers" in task[0].content:
+                mode = "websurfer"
+            else:
+                mode = None
+
             if self.team is None:
                 # TODO: if we start allowing load from config, we'll need to write the novnc and playwright ports back to the team config..
+                
                 _, _novnc_port, _playwright_port = await self._create_team(
                     team_config,
                     state,
@@ -461,6 +473,7 @@ class TeamManager:
                     env_vars,
                     settings_config or {},
                     paths=paths,
+                    mode=mode,
                 )
 
                 # Initialize known files by name for tracking
@@ -469,17 +482,19 @@ class TeamManager:
                 )
                 known_files = {file["name"] for file in initial_files}
 
-                # TODO：不让前端启动noVNC，
-                # yield TextMessage(
-                #     source="system",
-                #     content=f"Browser noVNC address can be found at http://localhost:{_novnc_port}/vnc.html",
-                #     metadata={
-                #         "internal": "no",
-                #         "type": "browser_address",
-                #         "novnc_port": str(_novnc_port),
-                #         "playwright_port": str(_playwright_port),
-                #     },
-                # )
+               
+                if mode == "websurfer":
+                    # 前端启动noVNC，在drsai模式下不需要启动noVNC
+                    yield TextMessage(
+                        source="system",
+                        content=f"Browser noVNC address can be found at http://localhost:{_novnc_port}/vnc.html",
+                        metadata={
+                            "internal": "no",
+                            "type": "browser_address",
+                            "novnc_port": str(_novnc_port),
+                            "playwright_port": str(_playwright_port),
+                        },
+                    )
 
                 async for message in self.team.run_stream(  # type: ignore
                     task=task, cancellation_token=cancellation_token
