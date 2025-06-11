@@ -160,6 +160,7 @@ async def auth(request: Request):
     
     # redirect_url = f"{request.base_url}auth?token={access_token.access_token}&username={user.username}"
     redirect_url = f"{request.base_url}auth?token={access_token.access_token}&username={user.email}"
+    # redirect_url = 'https://drsai.ihep.ac.cn/auth?token=xxx&username=xxx'
     response = RedirectResponse(url=redirect_url)
 
     refresh_token = create_jwt_token(

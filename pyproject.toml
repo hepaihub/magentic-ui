@@ -41,6 +41,10 @@ dependencies = [
     "html2text",
     "psutil",
     "dotmap",
+    "authlib",
+    "itsdangerous",
+    "pycryptodome",
+    "python-jose"
 ]
 
 [project.optional-dependencies]
