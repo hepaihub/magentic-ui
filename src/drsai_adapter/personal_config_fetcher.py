@@ -27,20 +27,51 @@ class PersonalKeyConfigFetcher:
         """获取默认配置"""
         
         personal_key = self.get_personal_key(username=username)
-        model_configs = f"""model_config: &client
-        provider: OpenAIChatCompletionClient
-        config:
-            model: "openai/gpt-4o"
-            base_url: "https://aiapi.ihep.ac.cn/apiv2"
-            api_key: "{personal_key}"
-            max_retries: 5
+    #     default_model_configs = f"""model_config: &client
+    #     provider: OpenAIChatCompletionClient
+    #     config:
+    #         model: "openai/gpt-4o"
+    #         base_url: "https://aiapi.ihep.ac.cn/apiv2"
+    #         api_key: "{personal_key}"
+    #         max_retries: 5
             
-        orchestrator_client: *client
-        coder_client: *client
-        web_surfer_client: *client
-        file_surfer_client: *client
-        action_guard_client: *client
-    """
+    #     orchestrator_client: *client
+    #     coder_client: *client
+    #     web_surfer_client: *client
+    #     file_surfer_client: *client
+    #     action_guard_client: *client
+    # """
+    
+    
+        default_model_configs = f"""model_config: &client
+  provider: drsai.HepAIChatCompletionClient
+  config:
+    model: "deepseek-ai/deepseek-v3:671b"
+    base_url: "https://aiapi.ihep.ac.cn/apiv2"
+    api_key: "{personal_key}"
+    max_retries: 1
+   
+
+r1_config: &r1_client
+  provider: drsai.HepAIChatCompletionClient
+  config:
+    model: "deepseek-ai/deepseek-r1:671b"
+    base_url: "https://aiapi.ihep.ac.cn/apiv2"
+    api_key: "{personal_key}"
+    max_retries: 1
+
+mode: drsai_besiii
+
+orchestrator_client: *client
+web_surfer_client: *client
+file_surfer_client: *client
+action_guard_client: *client
+planner_client: *client
+coder_client: *r1_client
+tester_client: *r1_client
+host_client: *r1_client
+parser_client: *client
+"""
 
         return {
             "cooperative_planning": True,
@@ -53,7 +84,7 @@ class PersonalKeyConfigFetcher:
             "allow_for_replans": True,
             "do_bing_search": False,
             "websurfer_loop": False,
-            "model_configs": model_configs,
+            "model_configs": default_model_configs,
             "retrieve_relevant_plans": "never"
         }
 

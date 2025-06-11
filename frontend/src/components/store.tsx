@@ -48,18 +48,34 @@ const defaultConfig: GeneralConfig = {
 // file_surfer_client: *client
 // action_guard_client: *client_action_guard`,
   model_configs: `model_config: &client
-  provider: OpenAIChatCompletionClient
+  provider: drsai.HepAIChatCompletionClient
   config:
-    model: "openai/gpt-4o"
+    model: "deepseek-ai/deepseek-v3:671b"
     base_url: "https://aiapi.ihep.ac.cn/apiv2"
     api_key: "{{AUTO_PERSONAL_KEY_FOR_DR_SAI}}"
-    max_retries: 5
+    max_retries: 1
+   
 
-  orchestrator_client: *client
-  coder_client: *client
-  web_surfer_client: *client
-  file_surfer_client: *client
-  action_guard_client: *client`,
+r1_config: &r1_client
+  provider: drsai.HepAIChatCompletionClient
+  config:
+    model: "deepseek-ai/deepseek-r1:671b"
+    base_url: "https://aiapi.ihep.ac.cn/apiv2"
+    api_key: "{{AUTO_PERSONAL_KEY_FOR_DR_SAI}}"
+    max_retries: 1
+
+mode: drsai_besiii
+
+orchestrator_client: *client
+web_surfer_client: *client
+file_surfer_client: *client
+action_guard_client: *client
+planner_client: *client
+coder_client: *r1_client
+tester_client: *r1_client
+host_client: *r1_client
+parser_client: *client
+`,
   retrieve_relevant_plans: "never",
 };
 

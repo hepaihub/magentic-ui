@@ -15,7 +15,7 @@ async def get_settings(user_id: str, db=Depends(get_db)) -> Dict:
         response = db.get(Settings, filters={"user_id": user_id})
         if not response.status or not response.data:
             # create a default settings
-            from .....drsai.singleton import personal_key_config_fetcher as fetcher
+            from .....drsai_adapter.singleton import personal_key_config_fetcher as fetcher
 
             config = fetcher.get_default_config(username=user_id)
             # config = {}
@@ -40,7 +40,7 @@ async def update_settings(settings: Settings, db=Depends(get_db)) -> Dict:
         
         if re.search(placeholder_pattern, model_configs):
             try:
-                from .....drsai.singleton import personal_key_config_fetcher as fetcher
+                from .....drsai_adapter.singleton import personal_key_config_fetcher as fetcher
                 new_api_key = fetcher.get_personal_key(username=settings.user_id)
             except ValueError as e:
                 raise HTTPException(status_code=400, detail=f"Failed to fetch personal API-KEY for {settings.user_id}") from e
